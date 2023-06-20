@@ -32,7 +32,7 @@ class CareerCrawlerDB:
             self.collection.update_one(
                 {"_id": job["_id"]},
                 {
-                    "$set": job,
+                    "$set": {k:v for k, v in job.items() if k != "create_date"},
                     "$setOnInsert": {"create_date": datetime.utcnow()},
                 },
                 upsert=True,

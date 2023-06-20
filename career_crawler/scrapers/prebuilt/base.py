@@ -1,7 +1,11 @@
 from dataclasses import dataclass
 from abc import abstractmethod
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from datetime import datetime
 
@@ -16,8 +20,31 @@ class BaseScraper: # pragma: no cover
         pass
 
     @abstractmethod
+    def scrape_paginated(self):
+        pass
+
+    @abstractmethod
     def parse(self):
         pass
+
+@dataclass
+class SeleniumBaseScraper(BaseScraper):
+
+    def __post_init__(self):
+        self.browser = None
+
+    def start_browser(self):
+        self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+
+    def close_browser(self):
+        if self.browser is not None:
+            self.browser.quit()
+
+    def load_page(self, url, wait_by=By.ID, wait_for_element=None):
+        self.browser.get(url)
+        WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((wait_by, wait_for_element)))
+        content = self.browser.page_source
+        self.soup = BeautifulSoup(content, 'html.parser')
 
 @dataclass
 class ParsedResult:

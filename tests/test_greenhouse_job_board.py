@@ -6,8 +6,8 @@ from career_crawler.scrapers import GreenhouseJobBoard
 def test_greenhouse_job_board_parse():
 
     greenhouse_job_board = GreenhouseJobBoard()
-    greenhouse_job_board.scrape(url = "D:/Documents/Github/CareerCrawler/tests/pages/thatgamecompany.html", local=True)
-    parsed_results = greenhouse_job_board.parse(company_name="thatgamecompany")
+    parsed_results = list(greenhouse_job_board.scrape_paginated(url = "tests/pages/thatgamecompany.html", local=True, company_name="thatgamecompany"))[0]
+
 
     assert len(parsed_results) > 0
     assert parsed_results[0].job_name == "Animator"
@@ -18,8 +18,8 @@ def test_greenhouse_job_board_parse():
 
 def test_edmentum():
     greenhouse_job_board = GreenhouseJobBoard()
-    greenhouse_job_board.scrape(url = "D:/Documents/Github/CareerCrawler/tests/pages/edmentum.html", local=True)
-    parsed_results = greenhouse_job_board.parse(company_name="edmentum")
+    greenhouse_job_board.scrape(url = "tests/pages/edmentum.html", local=True)
+    parsed_results = list(greenhouse_job_board.scrape_paginated(url = "tests/pages/edmentum.html", local=True, company_name="edmentum"))[0]
 
     assert len(parsed_results) > 0
     assert parsed_results[0].job_name == "Financial Analyst "

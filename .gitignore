@@ -162,3 +162,4 @@ cython_debug/
 # Specific configs and testing
 *careers.ini
 *.html
+*tests/pages/*

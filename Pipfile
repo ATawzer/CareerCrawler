@@ -7,6 +7,13 @@ name = "pypi"
 pymongo = "*"
 beautifulsoup4 = "*"
 selenium = "*"
+pyppeteer = "*"
+webdriver-manager = "*"
+torch = "*"
+torchvision = "*"
+torchaudio = "*"
+langchain = "*"
+transformers = "*"
 
 [dev-packages]
 invoke = "*"
