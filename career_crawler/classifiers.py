@@ -1,5 +1,7 @@
 import langchain
-from langchain import HuggingFacePipeline
+from langchain.chat_models import ChatOpenAI
+from langchain.llms import HuggingFacePipeline
+import os
 
 from langchain import PromptTemplate, LLMChain
 
@@ -7,6 +9,7 @@ class JobTypeClassifier:
 
     def __init__(self, model_id="google/flan-t5-xl"):
         self.llm = HuggingFacePipeline.from_model_id(model_id=model_id, task="text2text-generation", model_kwargs={"temperature":1})
+        #self.llm = ChatOpenAI(openai_api_key=os.environ.get('OPENAI_API_KEY'), model_name='gpt-3.5-turbo')
 
         self.categories = {
             "1": "Data Science, Machine Learning and AI",
@@ -18,7 +21,7 @@ class JobTypeClassifier:
         }
 
         self.template = """
-            Categorize '{job_title}' as one of the following:
+            Categorize '{job_title}' as one of the following, only returning the number:
             1 Data Science, Machine Learning and AI
             2 Software Engineering
             3 Marketing

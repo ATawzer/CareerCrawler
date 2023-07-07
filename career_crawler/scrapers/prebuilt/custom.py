@@ -169,4 +169,3 @@ class WarnerBrosJobBoard(SeleniumBaseScraper): # pragma: no cover
             ))
             
         return parsed_results
- 

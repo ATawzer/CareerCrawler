@@ -22,7 +22,7 @@ def test_job_type_classifier_predict(job_type_classifier):
     assert job_type_classifier.predict("sales rep") == "Sales"
     assert job_type_classifier.predict("sales manager") == "Sales"
     assert job_type_classifier.predict("rvp - sales") == "Sales"
-    assert job_type_classifier.predict("legal counzel") == "Other"
+    assert job_type_classifier.predict("legal counsel") == "Other"
     assert job_type_classifier.predict("customer support") == "Other"
     assert job_type_classifier.predict("customer service") == "Other"
     assert job_type_classifier.predict("finance analyst") == "Other"
