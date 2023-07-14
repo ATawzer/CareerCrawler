@@ -38,6 +38,29 @@ class CareerCrawlerDB:
                 upsert=True,
             )
 
+    def get_jobs(self, company_name=None, job_category=None, fields=None):
+        """
+        Fetches jobs from the database.
+
+        :param company_name: The company name to fetch jobs for.
+        :param job_category: The job category to fetch jobs for.
+        :param fields: The fields to return.
+        :return: A list of the results.
+        """
+
+        query = {}
+
+        if company_name is not None:
+            query["company_name"] = company_name
+
+        if job_category is not None:
+            query["job_category"] = job_category
+
+        if fields is None:
+            fields = ["company_name", "job_name", "job_category", "job_url", "last_updated"]
+
+        return list(self.collection.find(query, fields))
+
     def get_new_jobs(self, window_hours=24):
         """
         Fetches jobs where the difference between create_date and last_updated is less than a given window of hours.
@@ -51,3 +74,13 @@ class CareerCrawlerDB:
         return list(self.collection.find({
             "create_date": {"$gt": window_date}
         }))
+    
+    def remove_jobs_by_company_name(self, company_name):
+        """
+        Removes jobs by company name.
+
+        :param company_name: The company name to remove jobs for.
+        :return: None
+        """
+
+        self.collection.delete_many({"company_name": company_name})

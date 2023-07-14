@@ -4,6 +4,8 @@ import requests
 from bs4 import BeautifulSoup
 import time, random
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 class GreenhouseJobBoard(BaseScraper):
@@ -135,4 +137,65 @@ class LeverJobBoard(BaseScraper):
                     job_location=location_span.get_text(),
                     company_name=company_name
             ))
+        return parsed_results
+
+class WorkdayJobBoard(SeleniumBaseScraper):
+
+    def scrape_paginated(self, url, company_name=None): 
+        self.start_browser()
+        self.url_base = url.split('/')[2]
+        
+        # Load the first page
+        self.load_page(url, wait_by=By.CSS_SELECTOR, wait_for_element='button[aria-label="next"]')
+        
+        while True:
+            self.reload_content()
+            parsed_results = self.parse(company_name=company_name)
+            yield parsed_results
+            
+            try:
+                # Wait for the "next" button to be clickable, and then click it
+                next_button = WebDriverWait(self.browser, 10).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="next"]'))
+                )
+                next_button.click()
+
+                pause = random.randint(1, 5)
+                time.sleep(pause)
+                print(f'Pausing for {pause} seconds...')
+            except Exception as e:
+                print("No more pages left to scrape.")
+                break
+        
+        self.close_browser()
+
+
+    def scrape(self, url, company_name=None):
+        self.start_browser()
+        self.load_page(url)
+        parsed_results = self.parse(company_name=company_name)
+        self.close_browser()
+        return parsed_results
+    
+    def parse(self, company_name):
+        parsed_results = []
+
+        # Find <li> tags with certain attributes
+        for row in self.soup.find_all('li'):
+
+            # Find the link tag within this <li>
+            link_tag = row.find('a', {'data-automation-id': 'jobTitle'})
+            if not link_tag:
+                continue
+            location_tag = row.find('div', {'data-automation-id': 'locations'}).find('dd')
+
+
+            if link_tag and location_tag:
+                parsed_results.append(ParsedResult(
+                    job_name=link_tag.text,
+                    link=self.url_base+link_tag['href'],
+                    job_location=location_tag.text,
+                    company_name=company_name
+                ))
+
         return parsed_results

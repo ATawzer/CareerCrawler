@@ -10,7 +10,7 @@ load_dotenv()
 sys.path.append("D:\Documents\GitHub\CareerCrawler\career_crawler")
 from career_crawler.scrapers import *
 from career_crawler.db import CareerCrawlerDB
-from career_crawler.classifiers import JobTypeClassifier
+from career_crawler.classifiers import JobTypeClassifier, JobTypeSpecialist
 
 import configparser
 
@@ -91,7 +91,7 @@ def scrape_all(ctx):
     print("Done!")
 
 @task
-def scrape(ctx, name):
+def scrape(ctx, name, classify=False):
     if name not in URL_MAP:
         print(f"Invalid company name: {name}")
         return
@@ -103,6 +103,9 @@ def scrape(ctx, name):
 
         db = CareerCrawlerDB()
         db.update_jobs(db_recs)
+
+    if classify:
+        spec_classify(ctx)
 
 @task
 def test(ctx):
@@ -120,8 +123,13 @@ def test_file(ctx, filename):
 def run(ctx):
 
     scrape_all(ctx)
-    classify(ctx)
+    spec_classify(ctx)
     status(ctx)
+    app(ctx)
+
+@task
+def app(ctx):
+    ctx.run("streamlit run app.py")
 
 @task
 def classify(ctx, classifier=None, make_classifier=True, db=None):
@@ -130,7 +138,7 @@ def classify(ctx, classifier=None, make_classifier=True, db=None):
         classifier = JobTypeClassifier()
 
     db = CareerCrawlerDB() if db is None else db
-    db_recs = db.get_new_jobs(1)
+    db_recs = db.get_new_jobs(2)
 
     if classifier is not None:
         print(f"Classifying {len(db_recs)} jobs...")
@@ -140,3 +148,38 @@ def classify(ctx, classifier=None, make_classifier=True, db=None):
                 db.update_jobs([rec])
 
     #db.update_jobs(db_recs)
+
+@task
+def spec_classify(ctx, model_name="job_type_assistant20230714113155"):
+    jts = JobTypeSpecialist(model_name=model_name)
+    db = CareerCrawlerDB()
+    db_recs = db.get_new_jobs(2)
+
+    if jts is not None:
+        print(f"Classifying {len(db_recs)} jobs...")
+        for rec in tqdm(db_recs):
+            if ('job_category' not in rec) or (rec['job_category'] == 'Classifier Error'):
+                rec['job_category'] = jts.predict(rec['job_name'])
+    
+                db.update_jobs([rec])
+
+@task
+def reset_company(ctx, company_name):
+    db = CareerCrawlerDB()
+    db.remove_jobs_by_company_name(company_name)
+
+    scrape(ctx, company_name)
+    spec_classify(ctx)
+
+@task
+def train_model(c):
+    jts = JobTypeSpecialist()
+    jts._build()
+    print(f"Model has been successfully built and saved as {jts.model_name}.")
+
+@task
+def evaluate_model(c):
+    jts = JobTypeSpecialist(model_name='your_model_name_here')  # replace with your actual model name
+    jts.evaluate()
+    print("Model has been successfully evaluated. The confusion matrix is displayed above.")
+

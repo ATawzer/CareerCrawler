@@ -46,6 +46,10 @@ class SeleniumBaseScraper(BaseScraper):
         content = self.browser.page_source
         self.soup = BeautifulSoup(content, 'html.parser')
 
+    def reload_content(self):
+        content = self.browser.page_source
+        self.soup = BeautifulSoup(content, 'html.parser')
+
 @dataclass
 class ParsedResult:
     job_name: str = None
