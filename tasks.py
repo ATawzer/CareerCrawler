@@ -124,7 +124,7 @@ def run(ctx):
 
     scrape_all(ctx)
     spec_classify(ctx)
-    status(ctx)
+    #status(ctx)
     app(ctx)
 
 @task

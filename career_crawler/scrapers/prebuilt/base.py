@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from abc import abstractmethod
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service as BraveService
+from webdriver_manager.chrome import ChromeDriverManager, ChromeType
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -34,7 +34,7 @@ class SeleniumBaseScraper(BaseScraper):
         self.browser = None
 
     def start_browser(self):
-        self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+        self.browser = webdriver.Chrome(service=BraveService(ChromeDriverManager(chrome_type=ChromeType.BRAVE).install()))
 
     def close_browser(self):
         if self.browser is not None:
