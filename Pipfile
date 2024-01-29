@@ -12,8 +12,11 @@ webdriver-manager = "*"
 torch = "*"
 torchvision = "*"
 torchaudio = "*"
-langchain = "*"
+langchain-community = "*"
 transformers = "*"
+scikit-learn = "*"
+pandas = "*"
+streamlit = "*"
 
 [dev-packages]
 invoke = "*"

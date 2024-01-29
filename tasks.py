@@ -7,12 +7,10 @@ from tqdm import tqdm
 from dotenv import load_dotenv
 load_dotenv()
 
-sys.path.append("D:\Documents\GitHub\CareerCrawler\career_crawler")
+#sys.path.append("D:\Documents\GitHub\CareerCrawler\career_crawler")
 from career_crawler.scrapers import *
 from career_crawler.db import CareerCrawlerDB
 from career_crawler.classifiers import JobTypeClassifier, JobTypeSpecialist
-
-import configparser
 
 config = configparser.ConfigParser()
 config.read('careers.ini')

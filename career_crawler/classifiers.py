@@ -1,6 +1,5 @@
-import langchain
-from langchain.chat_models import ChatOpenAI
-from langchain.llms import HuggingFacePipeline
+from langchain_community.chat_models import ChatOpenAI
+from langchain_community.llms import HuggingFacePipeline
 import os
 from datetime import datetime
 from sklearn.feature_extraction.text import TfidfVectorizer

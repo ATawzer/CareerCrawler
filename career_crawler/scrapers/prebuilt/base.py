@@ -1,13 +1,15 @@
 from dataclasses import dataclass
 from abc import abstractmethod
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as BraveService
+from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager, ChromeType
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
 
 from datetime import datetime
+import os
 
 from bs4 import BeautifulSoup
 
@@ -34,7 +36,10 @@ class SeleniumBaseScraper(BaseScraper):
         self.browser = None
 
     def start_browser(self):
-        self.browser = webdriver.Chrome(service=BraveService(ChromeDriverManager(chrome_type=ChromeType.BRAVE).install()))
+        brave_path = os.getenv("brave_path")
+        options = Options()
+        options.binary_location = brave_path
+        self.browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
 
     def close_browser(self):
         if self.browser is not None:

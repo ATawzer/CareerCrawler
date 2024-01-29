@@ -9,7 +9,7 @@ client = MongoClient(
     os.getenv("mongo_host"),
     username=os.getenv("mongo_user"),
     password=os.getenv("mongo_pass"),
-    authSource=os.getenv("mongo_db"),
+    authSource=os.getenv("mongo_db_auth"),
     authMechanism="SCRAM-SHA-256",
 )
 
